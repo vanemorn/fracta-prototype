@@ -184,53 +184,6 @@
   }
   .gear-button:hover { color: #333; }
 
-  /* Preferences panel */
-  #preferences-panel {
-    position: fixed;
-    top: 0;
-    left: calc(var(--sidebar-width));
-    width: 380px;
-    height: 100vh;
-    background: #f8f9fa;
-    border-left: 1px solid #ccc;
-    box-shadow: 2px 0 16px rgba(0,0,0,0.12);
-    z-index: 200;
-    overflow-y: auto;
-    transition: transform 260ms cubic-bezier(.2,.8,.2,1), opacity 260ms;
-    transform: translateX(60px);
-    opacity: 1;
-  }
-
-  #preferences-panel.hidden {
-    transform: translateX(calc(-100% - 12px));
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  /* Preferences content */
-  .preferences-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 14px;
-    background: #ffffff;
-    border-bottom: 1px solid #e6e6e6;
-  }
-
-  .preferences-header h3 { margin: 0; font-size: 16px; }
-  .preferences-header button { background: none; border: none; font-size: 1.1rem; cursor: pointer; }
-
-  .preferences-content { padding: 14px; color: #333; font-size: 14px; }
-
-  .section { margin-bottom: 18px; }
-  .section h4 { margin: 0 0 8px 0; font-size: 13px; color:#444; }
-  .section label { display:block; margin-bottom:8px; }
-
-  .preferences-footer { display:flex; gap: 8px; justify-content: flex-end; padding: 14px; border-top: 1px solid #eee; background: #fff; }
-  .preferences-footer button { padding: 8px 12px; cursor:pointer; border-radius:6px; border:1px solid transparent; }
-  .preferences-footer .cancel { background:#f1f3f5; border-color:#e0e0e0; }
-  .preferences-footer .save { background:#0b74ff; color:#fff; }
-
   /* Canvas */
   .canvas-wrap { flex:1; display:flex; flex-direction:column; position:relative; }
   .canvas {
@@ -527,73 +480,10 @@
       
     </div>
 
-    <button id="preferences-toggle" class="gear-button" title="Preferences">⚙</button>
-
     </div>
-
-<!-- Preferences -->
-<div id="preferences-panel" class="hidden" aria-hidden="true">
-  <div class="preferences-header">
-    <h3>Preferences</h3>
-    <button id="preferences-close" aria-label="Close preferences">×</button>
-  </div>
-
-  <div class="preferences-content">
-    <div class="section">
-      <label><strong>Workspace</strong></label>
-      <select style="width:100%;padding:8px;border:1px solid #e0e0e0;border-radius:6px;">
-        <option>Planning</option>
-        <option>Focus</option>
-        <option>Collaboration</option>
-        <option>Recovery</option>
-        <option>Custom</option>
-      </select>
-    </div>
-
-    <div class="section">
-      <h4>Interface modulation</h4>
-      <div style="margin-bottom:8px;"><strong>High-energy mode</strong></div>
-      <label><input type="checkbox"> Use neutral colors</label>
-      <label><input type="checkbox"> Disable animations</label>
-      <label><input type="checkbox"> Enable break reminders</label>
-    </div>
-
-    <div class="section">
-      <div style="margin-bottom:8px;"><strong>Low-energy mode</strong></div>
-      <label><input type="checkbox"> Change theme with time of day</label>
-      <label><input type="checkbox"> Enable full animations</label>
-      <label><input type="checkbox"> Mute notifications</label>
-    </div>
-
-    <div class="section">
-      <h4>Other adjustments</h4>
-      <label style="display:flex;justify-content:space-between;align-items:center">Contrast
-        <input type="range" min="0" max="100" value="50" style="width:60%">
-      </label>
-      <label style="display:flex;justify-content:space-between;align-items:center">Font density
-        <input type="range" min="0" max="100" value="50" style="width:60%">
-      </label>
-      <label style="display:flex;justify-content:space-between;align-items:center">Font size
-        <input type="range" min="0" max="100" value="50" style="width:60%">
-      </label>
-    </div>
-
-    <div class="section">
-      <label><input type="checkbox"> Preview changes</label>
-    </div>
-
-    <div class="preferences-footer">
-      <button class="cancel">Cancel</button>
-      <button class="save">Save</button>
-    </div>
-  </div>
-</div>
 
 <script>
 
-const toggleBtn = document.getElementById('preferences-toggle');
-const closeBtn = document.getElementById('preferences-close');
-const panel = document.getElementById('preferences-panel');
 
 toggleBtn.addEventListener('click', (e) => {
   e.stopPropagation();
@@ -1435,4 +1325,5 @@ function placeDraggedAtPx(px) {
 </script>
 </body>
 </html>
+
 
