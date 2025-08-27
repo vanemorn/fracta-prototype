@@ -172,6 +172,18 @@
   }
   .group-header:active { cursor: grabbing; }
 
+  .gear-button {
+    background: none;
+    text-align: left;
+    margin-left: 20px;
+    border: none;
+    font-size: 1.4rem;
+    cursor: pointer;
+    color: #6b6b6b;
+    padding: 6px;
+  }
+  .gear-button:hover { color: #333; }
+
   /* Preferences panel */
   #preferences-panel {
     position: fixed;
@@ -514,6 +526,9 @@
       </div>
       
     </div>
+
+    <button id="preferences-toggle" class="gear-button" title="Preferences">⚙</button>
+
     </div>
 
 <!-- Preferences -->
