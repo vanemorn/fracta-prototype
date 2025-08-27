@@ -1,0 +1,1437 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+<title>Fracta</title>
+<style>
+  :root {
+    --handle-size: 12px;
+    --sidebar-width: 250px;
+  }
+
+  html,body { height:100%; 
+    margin:0; 
+    font-family:system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
+
+  .app { 
+    display:flex; 
+    height:100vh; 
+    flex-direction: row-reverse; }
+
+  /* Sidebar */
+
+  .sidebar {
+    width: 360px;
+    background: #F5F6F7;
+    color: #3B3B3B;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    position: relative; 
+    box-sizing: border-box;
+  }
+
+  .sidebar-main-header {
+    font-size: 20px;
+    margin-left: 20px;
+    font-weight: 500;
+    color: #3b3b3b;
+  }
+
+  .sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .sidebar-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 15px;
+    margin-bottom: 20px;
+    background: #091E42;
+    border-bottom: 1px solid #ccc;
+  }
+
+  .sidebar-logo-wrap {
+    display: flex;
+    align-items: left;
+  }
+
+  .sidebar-logo {
+    margin-left: 10px;
+    margin-right: 10px;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+  }
+
+  .sidebar-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #FAFBFB;
+  }
+
+  .sidebar-collapse {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #FAFBFB;
+  }
+
+  /* search bar */
+  .sidebar-search {
+    display: flex;
+    margin-left: 20px;
+    margin-right: 20px;
+    align-items: center;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    padding: 12px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+
+  .sidebar-search input {
+    border: none;
+    outline: none;
+    flex: 1;
+    font-size: 14px;
+  }
+
+  .sidebar-search .material-symbols-outlined {
+    font-size: 18px;
+    color: #666;
+  }
+
+  .group-container {
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background: #ffffff;
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+
+  /* sidebar items) */
+  .module {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    background: #EBEDF0;
+    color: #3B3B3B;
+    padding: 15px;
+    border-radius: 10px;
+    cursor: grab;
+    user-select: none;
+    transition: background-color 0.25s ease, transform 0.12s ease;
+    margin-right: 10px;
+    margin-top: 10px;
+  }
+
+  .module.in-workspace {
+    background: linear-gradient(90deg,#E8F0FF,#E2F2FF);
+    box-shadow: 0 1px 0 rgba(10,30,80,0.04) inset;
+  }
+
+  .module-left:last-child { margin-right: 0; }
+
+  .module-left {
+    display: inline-flex;
+    font-size: 14px;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .module .material-symbols-outlined {
+    display: inline-flex;
+    font-size: 18px;
+    color: #555;
+  }
+
+  .module:active { cursor: grabbing; }
+  .module:hover { background: #3d566e; color: white; }
+  .module:hover .material-icons { color: white; }
+
+  .group-header {
+    padding-bottom: 20px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 500;
+    border-bottom: 1px solid #bbb;
+    color: #3b3b3b;
+    cursor: grab;
+  }
+  .group-header:active { cursor: grabbing; }
+
+  .gear-button {
+    background: none;
+    text-align: left;
+    margin-left: 20px;
+    border: none;
+    font-size: 1.4rem;
+    cursor: pointer;
+    color: #6b6b6b;
+    padding: 6px;
+  }
+  .gear-button:hover { color: #333; }
+
+  /* Preferences panel */
+  #preferences-panel {
+    position: fixed;
+    top: 0;
+    left: calc(var(--sidebar-width));
+    width: 380px;
+    height: 100vh;
+    background: #f8f9fa;
+    border-left: 1px solid #ccc;
+    box-shadow: 2px 0 16px rgba(0,0,0,0.12);
+    z-index: 200;
+    overflow-y: auto;
+    transition: transform 260ms cubic-bezier(.2,.8,.2,1), opacity 260ms;
+    transform: translateX(60px);
+    opacity: 1;
+  }
+
+  #preferences-panel.hidden {
+    transform: translateX(calc(-100% - 12px));
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Preferences content */
+  .preferences-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px;
+    background: #ffffff;
+    border-bottom: 1px solid #e6e6e6;
+  }
+
+  .preferences-header h3 { margin: 0; font-size: 16px; }
+  .preferences-header button { background: none; border: none; font-size: 1.1rem; cursor: pointer; }
+
+  .preferences-content { padding: 14px; color: #333; font-size: 14px; }
+
+  .section { margin-bottom: 18px; }
+  .section h4 { margin: 0 0 8px 0; font-size: 13px; color:#444; }
+  .section label { display:block; margin-bottom:8px; }
+
+  .preferences-footer { display:flex; gap: 8px; justify-content: flex-end; padding: 14px; border-top: 1px solid #eee; background: #fff; }
+  .preferences-footer button { padding: 8px 12px; cursor:pointer; border-radius:6px; border:1px solid transparent; }
+  .preferences-footer .cancel { background:#f1f3f5; border-color:#e0e0e0; }
+  .preferences-footer .save { background:#0b74ff; color:#fff; }
+
+  /* Canvas */
+  .canvas-wrap { flex:1; display:flex; flex-direction:column; position:relative; }
+  .canvas {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    position:relative;
+    flex:1;
+    overflow:hidden;
+    padding:12px;
+    box-sizing:border-box;
+    background:
+      linear-gradient(to right, rgba(0,0,0,0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0,0,0,0.06) 1px, transparent 1px);
+    background-size: calc(100% / 3) 100%, 100% calc(100% / 3);
+  }
+
+  .workspace-module, .workspace-group { flex-grow:0; flex-shrink:0; }
+
+  .workspace-item {
+    position:absolute;        
+    display:flex;
+    flex-direction:column;
+    border:1px solid #333;
+    background:#fff;
+    min-width:80px;
+    min-height:60px;
+    box-sizing:border-box;
+    overflow: visible;
+    z-index: 20;
+  }
+
+  /* animation for new items */
+  .workspace-item.enter {
+    animation: popIn 220ms cubic-bezier(.2,.8,.2,1);
+  }
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.985); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  .workspace-header {
+    font-size: 16px;
+    font-weight:500;
+    display:flex;
+    align-items:center;
+    gap: 8px;
+    padding: 13px 12px;
+    background:#42526D;
+    color: #FAFBFB;
+  }
+
+  .workspace-header.group-myspace,
+  .workspace-header.group-collaboration {
+    background: #091E42; 
+  }
+
+
+  .workspace-close { color:#fff; border:none; padding:2px 8px; cursor:pointer; font-size:14px; margin-left:auto; background:transparent; }
+
+  .workspace-content {
+    flex:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#fafafa;
+  }
+
+  .workspace-content img { max-width:100%; max-height:100%; object-fit:contain; }
+
+  .workspace-nav {
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .nav-module {
+    font-size: 16px;
+    flex: 1;             
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    padding: 13px;
+    background: #F5F6F7;
+    cursor: grab;
+    color: #2B2B2B;
+    border:1px solid #C2C7D0;
+    gap: 10px;
+    transition: background 140ms ease, color 140ms ease;
+  }
+
+  .nav-module.selected {
+    background: #42526D;
+    color: white;
+  }
+
+  .workspace-header .material-symbols-outlined {
+    font-size: 18px;
+    line-height: 1;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: transparent;
+    cursor: default;
+    color: inherit;
+  }
+
+  .nav-module img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+  }
+
+  .nav-close {
+    background:#ff5c5c;
+    color:#fff;
+    border:none;
+    cursor:pointer;
+    padding:0 6px;
+  }
+
+  /* preview while dragging */
+  .placeholder {
+    position:absolute;
+    border:2px dashed rgba(0,0,0,0.18);
+    background: rgba(0,0,0,0.04);
+    pointer-events:none;
+    z-index:60;
+    transition:opacity 120ms;
+  }
+  .placeholder.new { background: rgba(24,115,255,0.10); border-color: rgba(24,115,255,0.6); }
+  .placeholder.existing { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.12); }
+
+  /* Resize handles */
+  .resize-handle-right { 
+    position:absolute; 
+    right:-6px; top:0; bottom:0; 
+    width:var(--handle-size); 
+    cursor:ew-resize; z-index:120;
+    background:transparent; }
+
+  .resize-handle-bottom { 
+    position:absolute; left:0; right:0; bottom:-6px; 
+    height:var(--handle-size); 
+    cursor:ns-resize; z-index:120; 
+    background:transparent; }
+
+  .resize-handle-corner { 
+    position:absolute; right:-8px; bottom:-8px; 
+    width:16px; height:16px; 
+    cursor:nwse-resize; z-index:120; 
+    background:transparent; }
+
+  .resize-handle-right:hover,
+  .resize-handle-bottom:hover,
+  .resize-handle-corner:hover { background: rgba(0,0,0,0.05); border-radius:3px; }
+
+  .size-badge {position:absolute; right:6px; top:6px; 
+    background:rgba(0,0,0,0.6); 
+    color:#fff; 
+    font-size:11px; 
+    padding:2px 6px; 
+    border-radius:4px; 
+    z-index:130; 
+    pointer-events:none; 
+    display:none; }
+
+  .hint { padding:8px 12px; font-size:13px; background: linear-gradient(0deg,#fff,#fafafa); border-top:1px solid #e6e6e6; }
+</style>
+</head>
+<body>
+<div class="app">
+
+    <div class="canvas-wrap">
+      <div id="canvas" class="canvas"></div>
+  </div>
+  
+  <div class="sidebar">
+    <!-- Top bar -->
+    <div class="sidebar-top">
+      <div class="sidebar-logo-wrap">
+        <div class="sidebar-logo"><img src="G:/Mi unidad/00_TESIS/Prototipo funcional/logo-fracta.png" alt="logo" style="width:100%;height:100%"></div>
+        <div class="sidebar-title">Fracta</div>
+      </div>
+      <button class="sidebar-collapse" title="Collapse sidebar">⮜</button>
+    </div>
+
+    <!-- Main header -->
+    <div class="sidebar-main-header" draggable="true" data-type="group" data-name="Modules">Modules</div>
+
+    <!-- Search bar -->
+    <div class="sidebar-search">
+      <input type="text" placeholder="Search modules..." />
+      <span class="material-symbols-outlined">search</span>
+    </div>
+
+    <!-- My Space group -->
+    <div class="group-container">
+      <div class="group-header" draggable="true" data-type="group" data-name="My Space">
+        My Space
+        <span class="material-symbols-outlined">drag_indicator</span>
+      </div>
+
+      <div class="module" draggable="true" data-type="module" data-name="To-Do">
+        <div class="module-left">
+          <span class="material-symbols-outlined">add_task</span>
+          <span>To-Do</span>
+          <span class="material-symbols-outlined">drag_indicator</span>
+        </div>
+      </div>
+
+      <div class="module" draggable="true" data-type="module" data-name="Planner">
+        <div class="module-left">
+          <span class="material-symbols-outlined">timeline</span>
+          <span>Planner</span>
+          <span class="material-symbols-outlined">drag_indicator</span> 
+        </div>
+      </div>
+
+      <div class="module" draggable="true" data-type="module" data-name="Notes">
+        <div class="module-left">
+          <span class="material-symbols-outlined">schedule</span>
+          <span>Notes</span>
+          <span class="material-symbols-outlined">drag_indicator</span>
+        </div>
+      </div>
+      
+      <div class="module" draggable="true" data-type="module" data-name="Timer">
+        <div class="module-left">
+          <span class="material-symbols-outlined">schedule</span>
+          <span>Timer</span>
+          <span class="material-symbols-outlined">drag_indicator</span>
+        </div>
+      </div>
+
+      <div class="module" draggable="true" data-type="module" data-name="Soundscape">
+        <div class="module-left">
+          <span class="material-symbols-outlined">graphic_eq</span>
+          <span>Soundscape</span>
+          <span class="material-symbols-outlined">drag_indicator</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Collaboration group -->
+    <div class="group-container">
+      <div class="group-header" draggable="true" data-type="group" data-name="Collaboration">
+        Collaboration
+        <span class="material-symbols-outlined">drag_indicator</span>
+      </div>
+
+      <div class="module" draggable="true" data-type="module" data-name="Chat">
+        <div class="module-left">
+          <span class="material-symbols-outlined">chat</span>
+          <span>Chat</span>
+          <span class="material-symbols-outlined">drag_indicator</span>
+        </div>
+      </div>
+
+      <div class="module" draggable="true" data-type="module" data-name="Files">
+        <div class="module-left">
+          <span class="material-symbols-outlined">folder</span>
+          <span>Files</span>
+          <span class="material-symbols-outlined">drag_indicator</span>
+        </div>
+      </div>
+
+      <div class="module" draggable="true" data-type="module" data-name="Projects">
+        <div class="module-left">
+          <span class="material-symbols-outlined">work</span>
+          <span>Projects</span>
+          <span class="material-symbols-outlined">drag_indicator</span>
+        </div>
+      </div>
+
+      <div class="module" draggable="true" data-type="module" data-name="Rooms">
+        <div class="module-left">
+          <span class="material-symbols-outlined">video_call</span>
+          <span>Rooms</span>
+          <span class="material-symbols-outlined">drag_indicator</span>
+        </div>
+      </div>
+
+      <div class="module" draggable="true" data-type="module" data-name="Directory">
+        <div class="module-left">
+          <span class="material-symbols-outlined">contact_page</span>
+          <span>Directory</span>
+          <span class="material-symbols-outlined">drag_indicator</span>
+        </div>
+      </div>
+      
+    </div>
+
+    <button id="preferences-toggle" class="gear-button" title="Preferences">⚙</button>
+
+    </div>
+
+<!-- Preferences -->
+<div id="preferences-panel" class="hidden" aria-hidden="true">
+  <div class="preferences-header">
+    <h3>Preferences</h3>
+    <button id="preferences-close" aria-label="Close preferences">×</button>
+  </div>
+
+  <div class="preferences-content">
+    <div class="section">
+      <label><strong>Workspace</strong></label>
+      <select style="width:100%;padding:8px;border:1px solid #e0e0e0;border-radius:6px;">
+        <option>Planning</option>
+        <option>Focus</option>
+        <option>Collaboration</option>
+        <option>Recovery</option>
+        <option>Custom</option>
+      </select>
+    </div>
+
+    <div class="section">
+      <h4>Interface modulation</h4>
+      <div style="margin-bottom:8px;"><strong>High-energy mode</strong></div>
+      <label><input type="checkbox"> Use neutral colors</label>
+      <label><input type="checkbox"> Disable animations</label>
+      <label><input type="checkbox"> Enable break reminders</label>
+    </div>
+
+    <div class="section">
+      <div style="margin-bottom:8px;"><strong>Low-energy mode</strong></div>
+      <label><input type="checkbox"> Change theme with time of day</label>
+      <label><input type="checkbox"> Enable full animations</label>
+      <label><input type="checkbox"> Mute notifications</label>
+    </div>
+
+    <div class="section">
+      <h4>Other adjustments</h4>
+      <label style="display:flex;justify-content:space-between;align-items:center">Contrast
+        <input type="range" min="0" max="100" value="50" style="width:60%">
+      </label>
+      <label style="display:flex;justify-content:space-between;align-items:center">Font density
+        <input type="range" min="0" max="100" value="50" style="width:60%">
+      </label>
+      <label style="display:flex;justify-content:space-between;align-items:center">Font size
+        <input type="range" min="0" max="100" value="50" style="width:60%">
+      </label>
+    </div>
+
+    <div class="section">
+      <label><input type="checkbox"> Preview changes</label>
+    </div>
+
+    <div class="preferences-footer">
+      <button class="cancel">Cancel</button>
+      <button class="save">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+
+const toggleBtn = document.getElementById('preferences-toggle');
+const closeBtn = document.getElementById('preferences-close');
+const panel = document.getElementById('preferences-panel');
+
+toggleBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  panel.classList.toggle('hidden');
+  panel.setAttribute('aria-hidden', panel.classList.contains('hidden') ? 'true' : 'false');
+});
+
+closeBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  panel.classList.add('hidden');
+  panel.setAttribute('aria-hidden', 'true');
+});
+
+// clicking outside closes the panel
+document.addEventListener('click', (e) => {
+  if (!panel.classList.contains('hidden')) {
+    if (!panel.contains(e.target) && !toggleBtn.contains(e.target)) {
+      panel.classList.add('hidden');
+      panel.setAttribute('aria-hidden', 'true');
+    }
+  }
+});
+
+/* Module images (preview images) */
+
+const moduleImages = {
+  "To-Do": {
+    full: "G:/Mi unidad/00_TESIS/Prototipo funcional/to-do_full-screen.png",
+    halfV: "G:/Mi unidad/00_TESIS/Prototipo funcional/to-do_half-vertical.png",
+    quarterH: "G:/Mi unidad/00_TESIS/Prototipo funcional/to-do_quarter-horizontal.png"
+  },
+  "Planner": {
+    full: "G:/Mi unidad/00_TESIS/Prototipo funcional/planner_full-screen.png",
+    halfV: "G:/Mi unidad/00_TESIS/Prototipo funcional/planner_half-vertical.png",
+    quarterH: "G:/Mi unidad/00_TESIS/Prototipo funcional/planner_quarter-horizontal.png"
+  },
+  "Notes": {
+    full: "G:/Mi unidad/00_TESIS/Prototipo funcional/notes_full-screen.png",
+    halfV: "G:/Mi unidad/00_TESIS/Prototipo funcional/notes_half-vertical.png",
+    quarterH: "G:/Mi unidad/00_TESIS/Prototipo funcional/notes_quarter-horizontal.png"
+  },
+  "Timer": {
+    full: "G:/Mi unidad/00_TESIS/Prototipo funcional/timer_full-screen.png",
+    halfV: "G:/Mi unidad/00_TESIS/Prototipo funcional/timer_half-vertical.png",
+    quarterH: "G:/Mi unidad/00_TESIS/Prototipo funcional/timer_quarter-horizontal.png"
+  },
+  "Soundscape": {
+    full: "G:/Mi unidad/00_TESIS/Prototipo funcional/soundscape_full-screen.png",
+    halfV: "G:/Mi unidad/00_TESIS/Prototipo funcional/soundscape_half-vertical.png",
+    quarterH: "G:/Mi unidad/00_TESIS/Prototipo funcional/soundscape_quarter-horizontal.png"
+  },
+  "Chat": {
+    full: "G:/Mi unidad/00_TESIS/Prototipo funcional/chat_full-screen.png",
+    halfV: "G:/Mi unidad/00_TESIS/Prototipo funcional/chat_half-vertical.png",
+    quarterH: "G:/Mi unidad/00_TESIS/Prototipo funcional/chat_quarter-horizontal.png"
+  },
+  "Files": {
+    full: "G:/Mi unidad/00_TESIS/Prototipo funcional/files_full-screen.png",
+    halfV: "G:/Mi unidad/00_TESIS/Prototipo funcional/files_half-vertical.png",
+    quarterH: "G:/Mi unidad/00_TESIS/Prototipo funcional/files_quarter-horizontal.png"
+  },
+  "Projects": {
+    full: "G:/Mi unidad/00_TESIS/Prototipo funcional/projects_full-screen.png",
+    halfV: "G:/Mi unidad/00_TESIS/Prototipo funcional/projects_half-vertical.png",
+    quarterH: "G:/Mi unidad/00_TESIS/Prototipo funcional/projects_quarter-horizontal.png"
+  },
+  "Rooms": {
+    full: "G:/Mi unidad/00_TESIS/Prototipo funcional/rooms_full-screen.png",
+    halfV: "G:/Mi unidad/00_TESIS/Prototipo funcional/rooms_half-vertical.png",
+    quarterH: "G:/Mi unidad/00_TESIS/Prototipo funcional/rooms_quarter-horizontal.png"
+  },
+  "Directory": {
+    full: "G:/Mi unidad/00_TESIS/Prototipo funcional/directory_full-screen.png",
+    halfV: "G:/Mi unidad/00_TESIS/Prototipo funcional/directory_half-vertical.png",
+    quarterH: "G:/Mi unidad/00_TESIS/Prototipo funcional/directory_quarter-horizontal.png"
+  }
+};
+
+const canvas = document.getElementById('canvas');
+let dragged = null;
+let sourceGroup = null;
+let previewNodes = [];
+let lastPreview = null;
+let mousePos = { x: 0, y: 0 };
+
+/* assign group to sidebar modules */
+document.querySelectorAll('.group-header').forEach(header => {
+  let groupName = header.dataset.name;
+  let next = header.nextElementSibling;
+  while(next && next.classList.contains('module')) {
+    next.dataset.group = groupName;
+    next = next.nextElementSibling;
+  }
+});
+
+/* mark/unmark sidebar module if in workspace */
+function markSidebarModuleInWorkspace(name, inWorkspace = true) {
+  document.querySelectorAll(`.module[data-name="${name}"]`).forEach(n => {
+    n.classList.toggle('in-workspace', !!inWorkspace);
+  });
+}
+
+/* Resizing and edge hover + drag resizing */
+function enableBorderResize(item) {
+  let isResizing = false;
+  let resizeDir = null;
+  let startX, startY, startW, startH, startL, startT;
+  const edgeSize = 8;
+
+  item.addEventListener('mousemove', e => {
+    if (isResizing) return;
+    const rect = item.getBoundingClientRect();
+    const offsetX = e.clientX - rect.left;
+    const offsetY = e.clientY - rect.top;
+    const onLeft = offsetX < edgeSize;
+    const onRight = offsetX > rect.width - edgeSize;
+    const onTop = offsetY < edgeSize;
+    const onBottom = offsetY > rect.height - edgeSize;
+
+    let cursor = '';
+    if (onTop && onLeft) cursor = 'nwse-resize';
+    else if (onTop && onRight) cursor = 'nesw-resize';
+    else if (onBottom && onLeft) cursor = 'nesw-resize';
+    else if (onBottom && onRight) cursor = 'nwse-resize';
+    else if (onLeft || onRight) cursor = 'ew-resize';
+    else if (onTop || onBottom) cursor = 'ns-resize';
+    item.style.cursor = cursor || 'default';
+  });
+
+  item.addEventListener('mousedown', e => {
+    const rect = item.getBoundingClientRect();
+    const offsetX = e.clientX - rect.left;
+    const offsetY = e.clientY - rect.top;
+    const onLeft = offsetX < edgeSize;
+    const onRight = offsetX > rect.width - edgeSize;
+    const onTop = offsetY < edgeSize;
+    const onBottom = offsetY > rect.height - edgeSize;
+    if (!(onLeft || onRight || onTop || onBottom)) return; 
+
+    e.preventDefault();
+    isResizing = true;
+    resizeDir = { onLeft, onRight, onTop, onBottom };
+    startX = e.clientX;
+    startY = e.clientY;
+    startW = rect.width;
+    startH = rect.height;
+
+    const parentRect = item.offsetParent ? item.offsetParent.getBoundingClientRect() : item.parentElement.getBoundingClientRect();
+    startL = rect.left - parentRect.left;
+    startT = rect.top - parentRect.top;
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  });
+
+  function onMouseMove(e) {
+    if (!isResizing) return;
+
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+
+    // HORIZONTAL
+    if (resizeDir.onRight || resizeDir.onLeft) {
+      let newW = startW + (resizeDir.onRight ? dx : -dx);
+      newW = Math.max(40, newW);
+      item.style.width = `${newW}px`;
+
+      if (resizeDir.onLeft) {
+        let newLeft = startL + (startW - newW);
+        newLeft = Math.max(0, newLeft);
+        item.style.left = `${newLeft}px`;
+      }
+    }
+
+    // VERTICAL
+    if (resizeDir.onBottom || resizeDir.onTop) {
+      let newH = startH + (resizeDir.onBottom ? dy : -dy);
+      newH = Math.max(40, newH);
+      item.style.height = `${newH}px`;
+      if (resizeDir.onTop) {
+        let newTop = startT + (startH - newH);
+        newTop = Math.max(0, newTop);
+        item.style.top = `${newTop}px`;
+      }
+    }
+  }
+
+  function onMouseUp() {
+    if (!isResizing) return;
+    isResizing = false;
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+  }
+}
+
+/* Drag starts*/
+document.querySelectorAll('.group-header, .module').forEach(node => {
+  node.addEventListener('dragstart', e => {
+    const t = e.currentTarget;
+    dragged = { type: t.dataset.type, name: t.dataset.name };
+    sourceGroup = null;
+    try { e.dataTransfer.setData('text/plain', JSON.stringify(dragged)); } catch(_) {}
+  });
+});
+
+/* allow dropping on canvas */
+canvas.addEventListener('dragover', e => {
+  e.preventDefault();
+  const rect = canvas.getBoundingClientRect();
+  mousePos = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+  updateDragPreview();
+});
+canvas.addEventListener('dragenter', e => e.preventDefault());
+
+canvas.addEventListener('drop', e => {
+  e.preventDefault();
+  if (!dragged) { clearPreview(); return; }
+
+  // returns the created/moved element 
+  const placed = commitDrop();
+
+  clearPreview();
+
+  // If a module was dragged mark its header as detached and show the icon+drag handle in header
+  if (dragged && dragged.type === 'module' && placed) {
+    const header = placed.querySelector('.workspace-header');
+    if (header) {
+      header.classList.add('detached');
+      const iconText = document.querySelector(`.module[data-name="${dragged.name}"] .material-symbols-outlined`)?.textContent || '';
+      const headerIconSpan = header.querySelector('span.material-symbols-outlined');
+      if (headerIconSpan) headerIconSpan.textContent = iconText;
+    }
+  }
+
+  // reset drag state
+  dragged = null;
+  sourceGroup = null;
+});
+
+canvas.addEventListener('dragleave', e => {
+  const r = canvas.getBoundingClientRect();
+  if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) {
+    clearPreview();
+  }
+});
+window.addEventListener('mousemove', e => {
+  const r = canvas.getBoundingClientRect();
+  mousePos = { x: e.clientX - r.left, y: e.clientY - r.top };
+});
+
+/* Image selection + update helpers */
+function getModuleImage(name, widthPct, heightPct) {
+  const entry = moduleImages[name];
+  if (!entry) return 'https://via.placeholder.com/400x300';
+  const v = (typeof entry === 'string') ? { full: entry, halfV: entry, quarterH: entry } : entry;
+
+  if (widthPct > 90 && heightPct > 90) return v.full;
+  if (Math.abs(heightPct - 50) <= 6) return v.halfV;           // around half height
+  if (Math.abs(widthPct - 25) <= 6) return v.quarterH;         // around quarter width
+
+  const dFull = Math.hypot(100 - widthPct, 100 - heightPct);
+  const dHalf = Math.abs(50 - heightPct);
+  const dQuarter = Math.abs(25 - widthPct);
+  if (dFull <= dHalf && dFull <= dQuarter) return v.full;
+  if (dHalf <= dFull && dHalf <= dQuarter) return v.halfV;
+  return v.quarterH;
+}
+
+function updateModuleImage(item, name) {
+  if (!item) return;
+  const img = item.querySelector('.workspace-content img');
+  if (!img) return;
+  // calculate percentages relative to canvas
+  const r = item.getBoundingClientRect();
+  const cr = canvas.getBoundingClientRect();
+  if (!cr.width || !cr.height) return;
+  const widthPct = (r.width / cr.width) * 100;
+  const heightPct = (r.height / cr.height) * 100;
+  const chosen = getModuleImage(name, widthPct, heightPct);
+  if (chosen && img.src !== chosen) {
+    img.src = chosen;
+    img.alt = name;
+  }
+}
+
+/* Create workspace elements */
+function createWorkspaceModule(name) {
+  const item = document.createElement('div');
+  item.className = 'workspace-item';
+  item.dataset.kind = 'module';
+  item.dataset.name = name;
+
+  item.style.position = 'absolute';
+  item.style.width = '320px';
+  item.style.height = '200px';
+  item.style.left = '40px';
+  item.style.top = '40px';
+  item.style.overflow = 'visible';
+
+  // add handles and border-resize behavior
+  addResizeHandles(item);
+  enableBorderResize(item);
+
+  // header construction 
+  const header = document.createElement('div');
+  header.className = 'workspace-header';
+
+  // icon text is read from sidebar module (material symbol name)
+  const iconText = document.querySelector(`.module[data-name="${name}"] .material-symbols-outlined`)?.textContent || '';
+  const iconSpan = document.createElement('span');
+  iconSpan.className = 'material-symbols-outlined';
+  iconSpan.textContent = iconText;
+  header.appendChild(iconSpan);
+
+  const titleSpan = document.createElement('span');
+  titleSpan.textContent = name;
+  header.appendChild(titleSpan);
+
+  const dragSpan = document.createElement('span');
+  dragSpan.className = 'material-symbols-outlined';
+  dragSpan.textContent = 'drag_indicator';
+  header.appendChild(dragSpan);
+
+  // close button (removes item and unmarks sidebar)
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'workspace-close';
+  closeBtn.textContent = '×';
+  closeBtn.addEventListener('click', () => {
+    item.remove();
+    markSidebarModuleInWorkspace(name, false);
+  });
+  header.appendChild(closeBtn);
+
+  // content with preview image
+  const content = document.createElement('div');
+  content.className = 'workspace-content';
+  const img = document.createElement('img');
+  img.src = '';
+  img.alt = name;
+  content.appendChild(img);
+
+  item.appendChild(header);
+  item.appendChild(content);
+
+  // draggable once in workspace (move)
+  item.setAttribute('draggable', 'true');
+  item.addEventListener('dragstart', e => {
+    dragged = { type: 'module', name: item.dataset.name, fromWorkspace: true, sourceItem: item };
+    sourceGroup = null;
+    try { e.dataTransfer.setData('text/plain', JSON.stringify(dragged)); } catch(_) {}
+  });
+
+  // entrance animation
+  item.classList.add('enter');
+  setTimeout(() => item.classList.remove('enter'), 300);
+
+  // mark sidebar module as present in workspace
+  markSidebarModuleInWorkspace(name, true);
+
+  // Update image once after placement
+  requestAnimationFrame(() => updateModuleImage(item, name));
+
+  // Live update when resized
+  try {
+    const ro = new ResizeObserver(() => updateModuleImage(item, name));
+    ro.observe(item);
+    item._imageResizeObserver = ro;
+  } catch (e) {
+  }
+
+  return item;
+}
+
+function createWorkspaceGroup(name, moduleNames = []) {
+  const item = document.createElement('div');
+  item.className = 'workspace-item';
+  item.dataset.kind = 'group';
+  item.dataset.name = name;
+
+  item.style.position = 'absolute';
+  item.style.width = '420px';
+  item.style.height = '260px';
+  item.style.left = '60px';
+  item.style.top = '60px';
+  item.style.overflow = 'visible';
+
+  addResizeHandles(item);
+  enableBorderResize(item);
+
+  // Header with group title
+  const header = document.createElement('div');
+  header.className = 'workspace-header';
+
+  const titleSpan = document.createElement('span');
+  titleSpan.textContent = name;
+  header.appendChild(titleSpan);
+
+  // add a drag icon to group header (so workspace group shows drag handle)
+  const groupDrag = document.createElement('span');
+  groupDrag.className = 'material-symbols-outlined';
+  groupDrag.textContent = 'drag_indicator';
+  header.appendChild(groupDrag);
+
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'workspace-close';
+  closeBtn.textContent = '×';
+  // when group removed, unmark its modules in the sidebar
+  closeBtn.addEventListener('click', () => {
+    item.remove();
+    moduleNames.forEach(n => markSidebarModuleInWorkspace(n, false));
+  });
+  header.appendChild(closeBtn);
+
+  if (name === "My Space") header.classList.add('group-myspace');
+  if (name === "Collaboration") header.classList.add('group-collaboration');
+
+  // Nav bar right below header
+  const nav = document.createElement('div');
+  nav.className = 'workspace-nav';
+
+  // Main content area
+  const content = document.createElement('div');
+  content.className = 'workspace-content';
+  const img = document.createElement('img');
+  img.src = 'https://via.placeholder.com/400x300';
+  img.alt = moduleNames[0] || '';
+  content.appendChild(img);
+
+  // Build module nav items
+  moduleNames.forEach((modName, index) => {
+    const navItem = document.createElement('div');
+    navItem.className = 'nav-module';
+    navItem.dataset.name = modName;
+    if (index === 0) navItem.classList.add('selected');
+
+    const icon = document.createElement('span');
+    icon.className = 'material-symbols-outlined';
+    icon.textContent = document.querySelector(`.module[data-name="${modName}"] .material-symbols-outlined`)?.textContent || 'apps';
+
+    const label = document.createElement('span');
+    label.textContent = modName;
+
+    const dragIcon = document.createElement('span');
+    dragIcon.className = 'material-symbols-outlined';
+    dragIcon.textContent = 'drag_indicator';
+
+    navItem.appendChild(icon);
+    navItem.appendChild(label);
+    navItem.appendChild(dragIcon);
+
+    // Switch image when module clicked (uses group item size to pick variant)
+    navItem.addEventListener('click', () => {
+      nav.querySelectorAll('.nav-module').forEach(n => n.classList.remove('selected'));
+      navItem.classList.add('selected');
+      // update the image for the group based on group's current size
+      updateModuleImage(item, modName);
+    });
+
+    // Make modules draggable out of the group
+    navItem.setAttribute('draggable', 'true');
+    navItem.addEventListener('dragstart', e => {
+      e.stopPropagation();
+      dragged = { type: 'module', name: modName };
+      sourceGroup = item;
+      try { e.dataTransfer.setData('text/plain', JSON.stringify(dragged)); } catch(_) {}
+    });
+
+    nav.appendChild(navItem);
+  });
+
+  // Assemble in correct order
+  item.appendChild(header);
+  item.appendChild(nav);     
+  item.appendChild(content);  
+
+  // Make group draggable as a whole
+  item.setAttribute('draggable', 'true');
+  item.addEventListener('dragstart', e => {
+    dragged = { type: 'group', name: item.dataset.name, moduleNames: Array.from(item.querySelectorAll('.nav-module')).map(n => n.dataset.name) };
+    sourceGroup = null;
+    try { e.dataTransfer.setData('text/plain', JSON.stringify(dragged)); } catch(_) {}
+  });
+
+  // mark the corresponding sidebar modules as "in workspace"
+  moduleNames.forEach(n => markSidebarModuleInWorkspace(n, true));
+
+  // entrance animation
+  item.classList.add('enter');
+  setTimeout(() => item.classList.remove('enter'), 300);
+
+  // Update group image after insertion and on resize
+  requestAnimationFrame(() => {
+    const defaultName = (moduleNames && moduleNames.length) ? moduleNames[0] : null;
+    if (defaultName) updateModuleImage(item, defaultName);
+  });
+  try {
+    const ro = new ResizeObserver(() => {
+      // update to currently selected module in this group
+      const sel = item.querySelector('.nav-module.selected');
+      const nm = sel ? sel.dataset.name : (moduleNames[0] || null);
+      if (nm) updateModuleImage(item, nm);
+    });
+    ro.observe(item);
+    item._imageResizeObserver = ro;
+  } catch (e) {}
+
+  return item;
+}
+
+/* Resize handles (pixel-based while dragging)*/
+
+function addResizeHandles(item) {
+  item.querySelectorAll('.resize-handle-right,.resize-handle-bottom,.resize-handle-corner,.size-badge').forEach(n => n.remove());
+
+  const right = document.createElement('div');
+  right.className = 'resize-handle-right';
+  item.appendChild(right);
+
+  const bottom = document.createElement('div');
+  bottom.className = 'resize-handle-bottom';
+  item.appendChild(bottom);
+
+  const corner = document.createElement('div');
+  corner.className = 'resize-handle-corner';
+  item.appendChild(corner);
+
+  const badge = document.createElement('div');
+  badge.className = 'size-badge';
+  item.appendChild(badge);
+
+  function updateBadge() {
+    const r = canvas.getBoundingClientRect();
+    const ir = item.getBoundingClientRect();
+    const wPct = Math.round((ir.width / r.width) * 100);
+    const hPct = Math.round((ir.height / r.height) * 100);
+    badge.textContent = `${wPct}% × ${hPct}%`;
+  }
+  function showBadge() { badge.style.display = 'block'; updateBadge(); }
+  function hideBadge() { badge.style.display = 'none'; }
+
+  function startResize(mode, e) {
+    e.preventDefault(); e.stopPropagation();
+    const canvasRect = canvas.getBoundingClientRect();
+    const start = {
+      mouseX: e.clientX,
+      mouseY: e.clientY,
+      left: item.getBoundingClientRect().left - canvasRect.left,
+      top: item.getBoundingClientRect().top - canvasRect.top,
+      width: item.getBoundingClientRect().width,
+      height: item.getBoundingClientRect().height
+    };
+    showBadge();
+
+    function onMove(ev) {
+      let dx = ev.clientX - start.mouseX;
+      let dy = ev.clientY - start.mouseY;
+      let newW = start.width, newH = start.height, newLeft = start.left, newTop = start.top;
+      if (mode === 'right') {
+        newW = Math.max(80, start.width + dx);
+      } else if (mode === 'bottom') {
+        newH = Math.max(60, start.height + dy);
+      } else if (mode === 'corner') {
+        newW = Math.max(80, start.width + dx);
+        newH = Math.max(60, start.height + dy);
+      }
+      item.style.width = `${newW}px`;
+      item.style.height = `${newH}px`;
+      item.style.left = `${newLeft}px`;
+      item.style.top = `${newTop}px`;
+      updateBadge();
+    }
+
+    function onUp() { hideBadge(); window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); }
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  }
+
+  right.addEventListener('mousedown', e => startResize('right', e));
+  bottom.addEventListener('mousedown', e => startResize('bottom', e));
+  corner.addEventListener('mousedown', e => startResize('corner', e));
+}
+
+/* Helpers & drag preview */
+function canvasRect() { return canvas.getBoundingClientRect(); }
+function allWorkspaceItems() { return Array.from(canvas.children).filter(c => c.classList && c.classList.contains('workspace-item')); }
+
+function pxRectToPct(px) {
+  const r = canvasRect();
+  return {
+    leftPct: (px.left / r.width) * 100,
+    topPct: (px.top / r.height) * 100,
+    widthPct: (px.width / r.width) * 100,
+    heightPct: (px.height / r.height) * 100
+  };
+}
+
+function setItemToPxRect(item, px) {
+  const p = pxRectToPct(px);
+  item.style.left = `${p.leftPct}%`;
+  item.style.top = `${p.topPct}%`;
+  item.style.width = `${p.widthPct}%`;
+  item.style.height = `${p.heightPct}%`;
+}
+
+function clearPreview() {
+  previewNodes.forEach(n => n.remove());
+  previewNodes = [];
+  lastPreview = null;
+}
+
+function makePlaceholder(px, isNew) {
+  const ph = document.createElement('div');
+  ph.className = 'placeholder ' + (isNew ? 'new' : 'existing');
+  ph.style.left = `${px.left}px`;
+  ph.style.top = `${px.top}px`;
+  ph.style.width = `${Math.max(6, px.width)}px`;
+  ph.style.height = `${Math.max(6, px.height)}px`;
+  ph.style.opacity = '0.33';
+  ph.style.display = 'block';
+  ph.style.boxSizing = 'border-box';
+  return ph;
+}
+
+function findItemUnderMouse() {
+  const cRect = canvasRect();
+  const items = allWorkspaceItems();
+  for (let i = items.length - 1; i >= 0; i--) {
+    const it = items[i];
+    const r = it.getBoundingClientRect();
+    const left = r.left - cRect.left, top = r.top - cRect.top;
+    const w = r.width, h = r.height;
+    if (mousePos.x >= left && mousePos.x <= left + w && mousePos.y >= top && mousePos.y <= top + h) {
+      return { el: it, px: { left, top, width: w, height: h } };
+    }
+  }
+  return null;
+}
+
+function chooseSplitAxis(targetPx) {
+  const cx = targetPx.left + targetPx.width / 2;
+  const cy = targetPx.top + targetPx.height / 2;
+  const dx = Math.abs(mousePos.x - cx);
+  const dy = Math.abs(mousePos.y - cy);
+  return dx >= dy ? 'vertical' : 'horizontal';
+}
+
+function updateDragPreview() {
+  if (!dragged) return;
+  const items = allWorkspaceItems();
+  const cRect = canvasRect();
+  if (!cRect.width || !cRect.height) return;
+
+  const hit = findItemUnderMouse();
+  clearPreview();
+
+  if (!hit) {
+    if (items.length === 0) {
+      const fullPx = { left: 0, top: 0, width: cRect.width, height: cRect.height };
+      const phNew = makePlaceholder(fullPx, true);
+      canvas.appendChild(phNew); previewNodes.push(phNew);
+      lastPreview = { newRect: fullPx, existingRect: null, targetItem: null };
+      return;
+    } else {
+      const whole = { left: 0, top: 0, width: cRect.width, height: cRect.height };
+      const axis = chooseSplitAxis(whole);
+      let newPx, existingPx;
+      if (axis === 'vertical') {
+        const half = Math.round(cRect.width / 2);
+        if (mousePos.x >= cRect.width / 2) {
+          newPx = { left: half, top: 0, width: cRect.width - half, height: cRect.height };
+          existingPx = { left: 0, top: 0, width: half, height: cRect.height };
+        } else {
+          newPx = { left: 0, top: 0, width: half, height: cRect.height };
+          existingPx = { left: half, top: 0, width: cRect.width - half, height: cRect.height };
+        }
+      } else {
+        const halfH = Math.round(cRect.height / 2);
+        if (mousePos.y >= cRect.height / 2) {
+          newPx = { left: 0, top: halfH, width: cRect.width, height: cRect.height - halfH };
+          existingPx = { left: 0, top: 0, width: cRect.width, height: halfH };
+        } else {
+          newPx = { left: 0, top: 0, width: cRect.width, height: halfH };
+          existingPx = { left: 0, top: halfH, width: cRect.width, height: cRect.height - halfH };
+        }
+      }
+      const phExisting = makePlaceholder(existingPx, false);
+      const phNew = makePlaceholder(newPx, true);
+      canvas.appendChild(phExisting); canvas.appendChild(phNew);
+      previewNodes.push(phExisting, phNew);
+      lastPreview = { newRect: newPx, existingRect: existingPx, targetItem: null };
+      return;
+    }
+  } else {
+    const target = hit.el;
+    const targetPx = hit.px;
+    const axis = chooseSplitAxis(targetPx);
+    let existingPx, newPx;
+    if (axis === 'vertical') {
+      const half = Math.round(targetPx.width / 2);
+      const centerX = targetPx.left + targetPx.width / 2;
+      if (mousePos.x >= centerX) {
+        newPx = { left: targetPx.left + half, top: targetPx.top, width: targetPx.width - half, height: targetPx.height };
+        existingPx = { left: targetPx.left, top: targetPx.top, width: half, height: targetPx.height };
+      } else {
+        newPx = { left: targetPx.left, top: targetPx.top, width: half, height: targetPx.height };
+        existingPx = { left: targetPx.left + half, top: targetPx.top, width: targetPx.width - half, height: targetPx.height };
+      }
+    } else {
+      const halfH = Math.round(targetPx.height / 2);
+      const centerY = targetPx.top + targetPx.height / 2;
+      if (mousePos.y >= centerY) {
+        newPx = { left: targetPx.left, top: targetPx.top + halfH, width: targetPx.width, height: targetPx.height - halfH };
+        existingPx = { left: targetPx.left, top: targetPx.top, width: targetPx.width, height: halfH };
+      } else {
+        newPx = { left: targetPx.left, top: targetPx.top, width: targetPx.width, height: halfH };
+        existingPx = { left: targetPx.left, top: targetPx.top + halfH, width: targetPx.width, height: targetPx.height - halfH };
+      }
+    }
+
+    const items = allWorkspaceItems();
+    items.forEach(it => {
+      const r = it.getBoundingClientRect();
+      const px = { left: r.left - cRect.left, top: r.top - cRect.top, width: r.width, height: r.height };
+      if (it === target) {
+        const phExisting = makePlaceholder(existingPx, false);
+        canvas.appendChild(phExisting); previewNodes.push(phExisting);
+        const phNew = makePlaceholder(newPx, true);
+        canvas.appendChild(phNew); previewNodes.push(phNew);
+      } else {
+        const ph = makePlaceholder(px, false);
+        canvas.appendChild(ph); previewNodes.push(ph);
+      }
+    });
+
+    lastPreview = { newRect: newPx, existingRect: existingPx, targetItem: target };
+    return;
+  }
+}
+
+/* commitDrop returns the created/moved element. placeDraggedAtPx marks sidebar modules as in-workspace*/
+function commitDrop() {
+  // returns the placed or moved DOM element (if any)
+  if (!lastPreview) {
+    const c = canvasRect();
+    const fallbackPx = { left: Math.round(c.width/4), top: Math.round(c.height/4), width: Math.round(c.width/2), height: Math.round(c.height/2) };
+    return placeDraggedAtPx(fallbackPx);
+  }
+  const newPx = lastPreview.newRect;
+  const existingPx = lastPreview.existingRect;
+  const targetItem = lastPreview.targetItem;
+  let placed = null;
+
+  if (targetItem && existingPx) {
+    // shrink/adjust the target area
+    setItemToPxRect(targetItem, existingPx);
+    placed = placeDraggedAtPx(newPx);
+
+  } else if (!targetItem && existingPx) {
+    let best = null, bestArea = 0;
+    allWorkspaceItems().forEach(it => {
+      const r = it.getBoundingClientRect();
+      const px = { left: r.left - canvasRect().left, top: r.top - canvasRect().top, width: r.width, height: r.height };
+      const ix = Math.max(0, Math.min(px.left+px.width, existingPx.left+existingPx.width) - Math.max(px.left, existingPx.left));
+      const iy = Math.max(0, Math.min(px.top+px.height, existingPx.top+existingPx.height) - Math.max(px.top, existingPx.top));
+      const area = ix * iy;
+      if (area > bestArea) { bestArea = area; best = it; }
+    });
+    if (best && bestArea > 0) {
+      setItemToPxRect(best, existingPx);
+    }
+    placed = placeDraggedAtPx(newPx);
+
+  } else if (!existingPx && !targetItem) {
+    placed = placeDraggedAtPx(newPx);
+  }
+
+  return placed;
+}
+
+function placeDraggedAtPx(px) {
+  if (!dragged) return null;
+  if (dragged.type === 'module') {
+    // if moving an already-existing workspace module
+    if (dragged.fromWorkspace && dragged.sourceItem) {
+      const source = dragged.sourceItem;
+      setItemToPxRect(source, px);
+      // update its image immediately
+      updateModuleImage(source, source.dataset.name);
+      return source;
+    }
+
+    // create a brand new workspace module
+    const newItem = createWorkspaceModule(dragged.name);
+    setItemToPxRect(newItem, px);
+    canvas.appendChild(newItem);
+
+    // If it came from a workspace group (sourceGroup set), remove the nav item inside that group
+    if (sourceGroup && sourceGroup.querySelector) {
+      const navModule = sourceGroup.querySelector(`.nav-module[data-name="${dragged.name}"]`);
+      if (navModule) {
+        // remove the nav item from the group's nav bar
+        navModule.remove();
+        const nav = sourceGroup.querySelector('.workspace-nav');
+        if (nav && nav.querySelectorAll('.nav-module').length === 0) {
+          // no modules left — remove entire group and unmark sidebar modules
+          sourceGroup.remove();
+        } else {
+          // if removed module was the selected one, pick another sibling as selected
+          const first = nav && nav.querySelector('.nav-module');
+          if (first) {
+            first.classList.add('selected');
+            const img = sourceGroup.querySelector('.workspace-content img');
+            if (img) {
+              // update based on group's current size using updateModuleImage
+              updateModuleImage(sourceGroup, first.dataset.name);
+            }
+          }
+        }
+      }
+    }
+
+    // mark the sidebar module as now in the workspace (ensures sidebar shows in-workspace state)
+    markSidebarModuleInWorkspace(dragged.name, true);
+
+    return newItem;
+
+  } else if (dragged.type === 'group') {
+    // build group using modules found in the sidebar group (uses dataset assignments)
+    const moduleNames = Array.from(document.querySelectorAll(`.module[data-group='${dragged.name}']`)).map(n => n.dataset.name);
+    const groupItem = createWorkspaceGroup(dragged.name, moduleNames);
+    setItemToPxRect(groupItem, px);
+    canvas.appendChild(groupItem);
+    return groupItem;
+  }
+
+  return null;
+}
+
+</script>
+</body>
+</html>
